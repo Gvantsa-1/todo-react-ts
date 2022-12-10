@@ -3,13 +3,18 @@ import bgImage from "./assets/rect.png";
 import Moment from "react-moment";
 import "moment-timezone";
 import { TodoContainer } from "./components/TodoContainer";
+import { useState } from "react";
+import light from "./assets/light.png";
+import dark from "./assets/dark.png";
+
 function App() {
+  const [dark, setDark] = useState(false);
   const weekday = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
   const d = new Date();
   let day = weekday[d.getDay()];
   const date = new Date();
 
-  const formatAMPM = (date: any) => {
+  const formatAMPM = (date: undefined | any) => {
     let hours = date.getHours();
     let minutes = date.getMinutes();
     const ampm = hours >= 12 ? "PM" : "AM";
@@ -27,6 +32,7 @@ function App() {
       <Title>Todo</Title>
       <Card>
         <MainImage>
+          <IconTheme></IconTheme>
           <DateBox>{day + " " + date.getDate()}</DateBox>
           <ClockBox>{formatAMPM(new Date())}</ClockBox>
         </MainImage>
@@ -51,6 +57,11 @@ const Card = styled.div`
     margin: 0 auto;
   }
 `;
+const IconTheme = styled.div`
+  position: absolute;
+  top: 10px;
+  left: 15px;
+`;
 const Title = styled.h1`
   font-weight: 700;
   font-size: 96px;
@@ -72,6 +83,7 @@ const MainImage = styled.div`
   margin-top: 20px;
   font-family: "Russo One", sans-serif;
   opacity: 0.9;
+  position: relative;
 `;
 const DateBox = styled.div`
   font-size: 18px;
@@ -86,7 +98,7 @@ const ClockBox = styled.div`
   font-weight: 900;
   line-height: 58px;
   color: #ffffff;
-  padding-left: 223px;
+  padding-left: 203px;
   font-family: "Russo One", sans-serif;
 `;
 

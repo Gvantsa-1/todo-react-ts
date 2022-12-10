@@ -1,29 +1,76 @@
 import React from "react";
 import styled from "styled-components";
 import icon from "../assets/checklist.png";
+import { useState } from "react";
+import deleteIcon from "../assets/deleteicon.png";
+import iconCircle from "../assets/Vector.png";
+const { v4: uuidv4 } = require("uuid");
+
+export type Props = {
+  setNewTask?: string[];
+  todoList?: string[];
+  newTask?: string;
+  id: number;
+};
 export const TodoContainer = () => {
+  const [todoList, setTodoList] = useState([]);
+  const [newTask, setNewTask] = useState("");
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTask(event.target.value);
+  };
+  const addTask = () => {
+    const task = {
+      id: todoList.length === 0 ? 1 : todoList[todoList.length - 1].id + 1,
+      taskname: newTask,
+    };
+    const newTodoList: string[] | any = [...todoList, task];
+    setTodoList(newTodoList);
+  };
+  const deleteTask = (id: number) => {
+    setTodoList(todoList.filter((task) => task.id !== id));
+  };
   return (
     <TodoBox>
       <InputWrapper>
-        <MainInput placeholder="Note" />
-        <AddButton>+</AddButton>
+        <MainInput onChange={handleChange} placeholder="Note" />
+        <AddButton onClick={addTask}>+</AddButton>
       </InputWrapper>
+      <BtnWrapper>
+        <BtnAll>All</BtnAll>
+        <BtnActive>Active</BtnActive>
+        <BtnComplete>Complete</BtnComplete>
+      </BtnWrapper>
+      {todoList.map((task) => {
+        return (
+          <ListWrapper>
+            <List>
+              <Note>{task.taskname}</Note>
+              <NoteDate>xcbbbb</NoteDate>
+            </List>
+            <Action>
+              <Mark />
+              <Delete onClick={() => deleteTask(task.id)} />
+            </Action>
+          </ListWrapper>
+        );
+      })}
     </TodoBox>
   );
 };
 
 const TodoBox = styled.div`
   width: 430px;
-  height: 436px;
+  height: 600px;
   background-color: #ffffff;
   overflow-y: auto;
   border-bottom-right-radius: 10px;
   border-bottom-left-radius: 10px;
+  padding: 23px 29px;
 `;
 const InputWrapper = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 23px 28px;
+  margin-bottom: 26px;
 `;
 const MainInput = styled.input`
   background: url(${icon}) no-repeat 14px;
@@ -41,4 +88,93 @@ const AddButton = styled.button`
   height: 49px;
   color: #ffffff;
   font-size: 28px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s linear;
+  &:hover {
+    background-color: #16bd96eb;
+  }
+`;
+const BtnWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 18px;
+`;
+const BtnAll = styled.button`
+  background-color: #20eeb0;
+  width: 110px;
+  height: 49px;
+  color: #ffffff;
+  font-size: 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s linear;
+  &:hover {
+    background-color: #2bad77;
+  }
+`;
+const BtnActive = styled.button`
+  background-color: #20eeb0;
+  width: 110px;
+  height: 49px;
+  color: #ffffff;
+  font-size: 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s linear;
+  &:hover {
+    background-color: #2bad77;
+  }
+`;
+const BtnComplete = styled.button`
+  background-color: #20eeb0;
+  width: 110px;
+  height: 49px;
+  color: #ffffff;
+  font-size: 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s linear;
+  &:hover {
+    background-color: #2bad77;
+  }
+`;
+const ListWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+const List = styled.div`
+  display: block;
+  align-items: center;
+  flex-direction: column;
+  margin-bottom: 9px;
+`;
+const Note = styled.h3`
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 21.78px;
+  color: #0d0d0d;
+  font-family: "Inter", sans-serif;
+  padding-top: 15px;
+`;
+const NoteDate = styled.div`
+  padding: 5px;
+`;
+const Action = styled.div`
+  width: 70px;
+  margin-right: 0px;
+`;
+const Mark = styled.button`
+  background: url(${iconCircle}) no-repeat;
+  width: 22px;
+  height: 22px;
+  margin-right: 15px;
+  cursor: pointer;
+`;
+const Delete = styled.button`
+  background: url(${deleteIcon}) no-repeat;
+  width: 22px;
+  height: 23px;
+  cursor: pointer;
 `;
