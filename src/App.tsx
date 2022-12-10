@@ -3,12 +3,23 @@ import bgImage from "./assets/rect.png";
 import Moment from "react-moment";
 import "moment-timezone";
 import { TodoContainer } from "./components/TodoContainer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import light from "./assets/light.png";
-import dark from "./assets/dark.png";
-
+import darkIcon from "./assets/dark.png";
+import { ITask } from "./Interfaces";
+export type Props = {
+  dark?: boolean;
+};
 function App() {
-  const [dark, setDark] = useState(false);
+  const [dateHours, setDateHours] = useState(new Date());
+  const [dark, setDark] = useState<boolean>(false);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDateHours(new Date());
+    }, 1000);
+    return () => clearInterval(interval);
+  });
+
   const weekday = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
   const d = new Date();
   let day = weekday[d.getDay()];
@@ -28,22 +39,40 @@ function App() {
   };
 
   return (
-    <MainContainer>
-      <Title>Todo</Title>
-      <Card>
-        <MainImage>
-          <IconTheme></IconTheme>
-          <DateBox>{day + " " + date.getDate()}</DateBox>
-          <ClockBox>{formatAMPM(new Date())}</ClockBox>
-        </MainImage>
-        <TodoContainer />
-      </Card>
-    </MainContainer>
+    <BgColor dark={dark}>
+      <MainContainer>
+        <Title>Todo</Title>
+        <Card>
+          <MainImage>
+            {dark ? (
+              <IconTheme onClick={() => setDark(!dark)} src={light} />
+            ) : (
+              <IconTheme onClick={() => setDark(!dark)} src={darkIcon} />
+            )}
+            <DateBox dark={dark}>{day + " " + date.getDate()}</DateBox>
+            <ClockBox dark={dark}>{formatAMPM(new Date())}</ClockBox>
+          </MainImage>
+          <TodoContainer dark={dark} />
+        </Card>
+      </MainContainer>
+    </BgColor>
   );
 }
+const BgColor = styled.div<Props>`
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  font-family: "Inter", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: ${(props) =>
+    props.dark ? "#000000d4" : "rgba(188, 179, 179, 0.799)"};
+`;
 const MainContainer = styled.div`
   display: flex;
   justify-content: space-between;
+
   @media screen and (max-width: 1050px) {
     display: block;
     justify-content: center;
@@ -57,10 +86,13 @@ const Card = styled.div`
     margin: 0 auto;
   }
 `;
-const IconTheme = styled.div`
+const IconTheme = styled.img`
   position: absolute;
   top: 10px;
   left: 15px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
 `;
 const Title = styled.h1`
   font-weight: 700;
@@ -84,20 +116,21 @@ const MainImage = styled.div`
   font-family: "Russo One", sans-serif;
   opacity: 0.9;
   position: relative;
+  z-index: 0;
 `;
-const DateBox = styled.div`
+const DateBox = styled.div<Props>`
   font-size: 18px;
-  color: #ffffff;
+  color: ${(props) => (props.dark ? "#007fdb;" : "#ffffff")};
   padding: 110px 0px 0 360px;
   font-weight: 400px;
   font-family: "Russo One", sans-serif;
 `;
 
-const ClockBox = styled.div`
+const ClockBox = styled.div<Props>`
   font-size: 48px;
   font-weight: 900;
   line-height: 58px;
-  color: #ffffff;
+  color: ${(props) => (props.dark ? "#007fdb;" : "#ffffff")};
   padding-left: 203px;
   font-family: "Russo One", sans-serif;
 `;

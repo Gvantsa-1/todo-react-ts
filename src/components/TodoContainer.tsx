@@ -1,38 +1,39 @@
 import React from "react";
 import styled from "styled-components";
 import icon from "../assets/checklist.png";
-import { useState } from "react";
-import deleteIcon from "../assets/deleteicon.png";
-import iconCircle from "../assets/Vector.png";
-const { v4: uuidv4 } = require("uuid");
+import { useState, FC, useEffect } from "react";
+import { ITask } from "../Interfaces";
+import { TodoTask } from "../components/TodoTask";
 
-export type Props = {
-  setNewTask?: string[];
-  todoList?: string[];
-  newTask?: string;
-  id: number;
-};
-export const TodoContainer = () => {
+interface Props {
+  task: ITask;
+  completeTask(taskNameToDelete: string): void;
+  id?: ITask;
+  dark?: boolean;
+}
+
+export const TodoContainer = (Props: boolean | any) => {
+  const { dark } = Props;
   const [todoList, setTodoList] = useState([]);
   const [newTask, setNewTask] = useState("");
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setNewTask(event.target.value);
   };
-  const addTask = () => {
-    const task = {
+  const addTask = (): void => {
+    const task: any = {
       id: todoList.length === 0 ? 1 : todoList[todoList.length - 1].id + 1,
       taskname: newTask,
     };
     const newTodoList: string[] | any = [...todoList, task];
     setTodoList(newTodoList);
   };
-  const deleteTask = (id: number) => {
+  const deleteTask = (id: string | number): void => {
     setTodoList(todoList.filter((task) => task.id !== id));
   };
   return (
-    <TodoBox>
+    <TodoBox dark={dark}>
       <InputWrapper>
-        <MainInput onChange={handleChange} placeholder="Note" />
+        <MainInput name="task" onChange={handleChange} placeholder="Note" />
         <AddButton onClick={addTask}>+</AddButton>
       </InputWrapper>
       <BtnWrapper>
@@ -40,28 +41,18 @@ export const TodoContainer = () => {
         <BtnActive>Active</BtnActive>
         <BtnComplete>Complete</BtnComplete>
       </BtnWrapper>
-      {todoList.map((task) => {
-        return (
-          <ListWrapper>
-            <List>
-              <Note>{task.taskname}</Note>
-              <NoteDate>xcbbbb</NoteDate>
-            </List>
-            <Action>
-              <Mark />
-              <Delete onClick={() => deleteTask(task.id)} />
-            </Action>
-          </ListWrapper>
-        );
+      {todoList.map((task: ITask, key: number) => {
+        return <TodoTask key={key} task={task} deleteTask={deleteTask} />;
       })}
     </TodoBox>
   );
 };
 
-const TodoBox = styled.div`
+const TodoBox = styled.div<Props>`
   width: 430px;
   height: 600px;
-  background-color: #ffffff;
+  background: ${(props) =>
+    props.dark ? "rgba(219, 215, 215, 0.799)" : "#ffffff"};
   overflow-y: auto;
   border-bottom-right-radius: 10px;
   border-bottom-left-radius: 10px;
@@ -138,43 +129,4 @@ const BtnComplete = styled.button`
   &:hover {
     background-color: #2bad77;
   }
-`;
-const ListWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-const List = styled.div`
-  display: block;
-  align-items: center;
-  flex-direction: column;
-  margin-bottom: 9px;
-`;
-const Note = styled.h3`
-  font-size: 18px;
-  font-weight: 500;
-  line-height: 21.78px;
-  color: #0d0d0d;
-  font-family: "Inter", sans-serif;
-  padding-top: 15px;
-`;
-const NoteDate = styled.div`
-  padding: 5px;
-`;
-const Action = styled.div`
-  width: 70px;
-  margin-right: 0px;
-`;
-const Mark = styled.button`
-  background: url(${iconCircle}) no-repeat;
-  width: 22px;
-  height: 22px;
-  margin-right: 15px;
-  cursor: pointer;
-`;
-const Delete = styled.button`
-  background: url(${deleteIcon}) no-repeat;
-  width: 22px;
-  height: 23px;
-  cursor: pointer;
 `;
