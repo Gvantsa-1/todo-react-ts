@@ -1,25 +1,28 @@
 import React from "react";
 import styled from "styled-components";
 import icon from "../assets/checklist.png";
-import { useState, FC, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { ITask } from "../Interfaces";
 import { TodoTask } from "../components/TodoTask";
 
 interface Props {
-  task: ITask;
-  completeTask(taskNameToDelete: string): void;
-  id?: ITask;
   dark?: boolean;
+  completed?: boolean | undefined;
 }
-
+interface todo {
+  id?: ITask;
+  taskname?: string;
+  completeTask(deleteTask: string): void;
+}
 export const TodoContainer = (Props: boolean | any) => {
-  const { dark } = Props;
-  const [todoList, setTodoList] = useState([]);
-  const [newTask, setNewTask] = useState("");
+  const { dark, formatAMPM } = Props;
+  const [todoList, setTodoList] = useState<any>([]);
+  const [completed, setCompleted] = useState<boolean>(false);
+  const [newTask, setNewTask] = useState<string>("");
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setNewTask(event.target.value);
   };
-  const addTask = (): void => {
+  const addTask = (id: any): void => {
     const task: any = {
       id: todoList.length === 0 ? 1 : todoList[todoList.length - 1].id + 1,
       taskname: newTask,
@@ -28,12 +31,28 @@ export const TodoContainer = (Props: boolean | any) => {
     setTodoList(newTodoList);
   };
   const deleteTask = (id: string | number): void => {
-    setTodoList(todoList.filter((task) => task.id !== id));
+    setTodoList(todoList.filter((task: string[] | any) => task.id !== id));
+  };
+  const completeTask = (id: string | number): void => {
+    setTodoList(
+      todoList.map((task: any): void => {
+        if (task.id === id) {
+          return { ...(task || setCompleted(true)) };
+        } else {
+          return task;
+        }
+      })
+    );
   };
   return (
     <TodoBox dark={dark}>
       <InputWrapper>
-        <MainInput name="task" onChange={handleChange} placeholder="Note" />
+        <MainInput
+          key={"id"}
+          name="task"
+          onChange={handleChange}
+          placeholder="Note"
+        />
         <AddButton onClick={addTask}>+</AddButton>
       </InputWrapper>
       <BtnWrapper>
@@ -41,9 +60,27 @@ export const TodoContainer = (Props: boolean | any) => {
         <BtnActive>Active</BtnActive>
         <BtnComplete>Complete</BtnComplete>
       </BtnWrapper>
-      {todoList.map((task: ITask, key: number) => {
-        return <TodoTask key={key} task={task} deleteTask={deleteTask} />;
-      })}
+      {todoList.map(
+        (
+          task: ITask,
+          key: number,
+          id: number,
+          completed: boolean,
+          setCompleted: boolean
+        ) => {
+          return (
+            <TodoTask
+              completeTask={completeTask}
+              key={key}
+              task={task}
+              deleteTask={deleteTask}
+              completed={completed}
+              setCompleted={setCompleted}
+              formatAMPM={formatAMPM}
+            />
+          );
+        }
+      )}
     </TodoBox>
   );
 };

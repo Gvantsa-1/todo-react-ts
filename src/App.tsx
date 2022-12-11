@@ -1,12 +1,12 @@
 import styled from "styled-components";
 import bgImage from "./assets/rect.png";
-import Moment from "react-moment";
 import "moment-timezone";
 import { TodoContainer } from "./components/TodoContainer";
 import { useEffect, useState } from "react";
 import light from "./assets/light.png";
 import darkIcon from "./assets/dark.png";
 import { ITask } from "./Interfaces";
+
 export type Props = {
   dark?: boolean;
 };
@@ -52,7 +52,7 @@ function App() {
             <DateBox dark={dark}>{day + " " + date.getDate()}</DateBox>
             <ClockBox dark={dark}>{formatAMPM(new Date())}</ClockBox>
           </MainImage>
-          <TodoContainer dark={dark} />
+          <TodoContainer formatAMPM={formatAMPM} dark={dark} />
         </Card>
       </MainContainer>
     </BgColor>
@@ -67,7 +67,7 @@ const BgColor = styled.div<Props>`
   justify-content: center;
   align-items: center;
   background: ${(props) =>
-    props.dark ? "#000000d4" : "rgba(188, 179, 179, 0.799)"};
+    props.dark ? "#000000d4" : "rgba(218, 214, 214, 0.912)"};
 `;
 const MainContainer = styled.div`
   display: flex;
