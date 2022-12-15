@@ -3,41 +3,59 @@ import { ITask } from "../Interfaces";
 import styled from "styled-components";
 import deleteIcon from "../assets/deleteicon.png";
 import iconCircle from "../assets/Vector.png";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import icon from "../assets/checklist.png";
 
 interface Props {
   task: ITask;
-  deleteTask(deleteTask: string): void;
-  completeTask(deleteTask: string): void;
+  deleteTask: (deleteTask: string) => void;
   taskname?: any;
   dark?: boolean;
-  completed?: boolean;
-  setCompleted?: boolean;
-  formatAMPM(formatAMPM: string): void;
+  marked?: boolean;
+  setCompleted: boolean;
+  todoList: any;
+  completeTask(Task: string | number): void;
 }
-const today = new Date();
-const noteDates = today.getDate();
 
-export const TodoTask = (Props: any) => {
+const today = new Date();
+let hour = today.getHours();
+const noteampm = hour >= 12 ? "PM" : "AM";
+hour %= 12;
+hour = hour || 12;
+const noteDates = today.getDate();
+const noteHours = today.getHours();
+let minutes: number | string = today.getMinutes();
+
+const noteMinutes = (minutes = minutes < 10 ? `0${minutes}` : minutes);
+
+export const TodoTask = (props: any) => {
   const {
     task,
     deleteTask,
+    todoList,
     completeTask,
+    handleMarked,
     formatAMPM,
-    completed,
-    setCompleted,
-  } = Props;
+    id,
+  } = props;
+  const [marked, setMarked] = useState<boolean>(false);
+
   return (
     <ListWrapper>
       <List>
         <Note>{task.taskname}</Note>
         <NoteDate>
-          {noteDates} at {formatAMPM(new Date())}
+          {noteDates} at {noteHours}:{noteMinutes} {noteampm}
         </NoteDate>
       </List>
       <Action>
-        <Mark completed={completed} onClick={() => completeTask(task.id)} />
+        <Mark
+          onClick={() => completeTask(task.id)}
+          style={{
+            backgroundImage: marked ? `url(${icon})` : `url(${iconCircle})`,
+          }}
+        />
+
         <Delete onClick={() => deleteTask(task.id)} />
       </Action>
     </ListWrapper>
@@ -71,13 +89,17 @@ const Action = styled.div`
   width: 70px;
   margin-right: 0px;
 `;
-const Mark = styled.button<Props>`
-  background: url(${iconCircle}) no-repeat;
+const Mark = styled.button`
+  background: no-repeat;
   overflow-y: auto;
   width: 22px;
   height: 22px;
   margin-right: 15px;
   cursor: pointer;
+`;
+const MarkWrapper = styled.div`
+  display: inline;
+  padding: 1%;
 `;
 const Delete = styled.button`
   background: url(${deleteIcon}) no-repeat;

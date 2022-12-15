@@ -12,20 +12,23 @@ interface Props {
 interface todo {
   id?: ITask;
   taskname?: string;
-  completeTask(deleteTask: string): void;
+  deleteTask(Taskdelete: any): void;
 }
 export const TodoContainer = (Props: boolean | any) => {
   const { dark, formatAMPM } = Props;
   const [todoList, setTodoList] = useState<any>([]);
-  const [completed, setCompleted] = useState<boolean>(false);
+  const [marked, setMarked] = useState<boolean>(false);
   const [newTask, setNewTask] = useState<string>("");
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setNewTask(event.target.value);
   };
-  const addTask = (id: any): void => {
+  const addTask = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     const task: any = {
       id: todoList.length === 0 ? 1 : todoList[todoList.length - 1].id + 1,
       taskname: newTask,
+      completed: false,
     };
     const newTodoList: string[] | any = [...todoList, task];
     setTodoList(newTodoList);
@@ -33,11 +36,14 @@ export const TodoContainer = (Props: boolean | any) => {
   const deleteTask = (id: string | number): void => {
     setTodoList(todoList.filter((task: string[] | any) => task.id !== id));
   };
+  const handleMarked = (id: string | number) => {
+    setMarked(!marked);
+  };
   const completeTask = (id: string | number): void => {
     setTodoList(
       todoList.map((task: any): void => {
         if (task.id === id) {
-          return { ...(task || setCompleted(true)) };
+          return { ...task, completed: true };
         } else {
           return task;
         }
@@ -46,15 +52,19 @@ export const TodoContainer = (Props: boolean | any) => {
   };
   return (
     <TodoBox dark={dark}>
-      <InputWrapper>
-        <MainInput
-          key={"id"}
-          name="task"
-          onChange={handleChange}
-          placeholder="Note"
-        />
-        <AddButton onClick={addTask}>+</AddButton>
-      </InputWrapper>
+      <form onSubmit={addTask}>
+        {" "}
+        <InputWrapper>
+          <MainInput
+            key={"id"}
+            name="task"
+            onChange={handleChange}
+            placeholder="Note"
+            required
+          />
+          <AddButton type="submit">+</AddButton>
+        </InputWrapper>{" "}
+      </form>
       <BtnWrapper>
         <BtnAll>All</BtnAll>
         <BtnActive>Active</BtnActive>
@@ -70,13 +80,14 @@ export const TodoContainer = (Props: boolean | any) => {
         ) => {
           return (
             <TodoTask
-              completeTask={completeTask}
               key={key}
               task={task}
               deleteTask={deleteTask}
               completed={completed}
               setCompleted={setCompleted}
               formatAMPM={formatAMPM}
+              id={id}
+              completeTask={completeTask}
             />
           );
         }
