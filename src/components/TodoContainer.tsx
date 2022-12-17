@@ -12,14 +12,17 @@ interface Props {
 interface todo {
   id?: ITask;
   taskname?: string;
-  deleteTask(Taskdelete: any): void;
+  deleteTask(Taskdelete: undefined): void;
+  activeTask(Taskdelete: undefined): void;
 }
 export const TodoContainer = (Props: boolean | any) => {
   const { dark, formatAMPM } = Props;
   const [todoList, setTodoList] = useState<any>([]);
   const [marked, setMarked] = useState<boolean>(false);
   const [newTask, setNewTask] = useState<string>("");
-
+  const handleMarked = (id: string | number) => {
+    setMarked(!marked);
+  };
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setNewTask(event.target.value);
   };
@@ -36,20 +39,11 @@ export const TodoContainer = (Props: boolean | any) => {
   const deleteTask = (id: string | number): void => {
     setTodoList(todoList.filter((task: string[] | any) => task.id !== id));
   };
-  const handleMarked = (id: string | number) => {
-    setMarked(!marked);
-  };
-  const completeTask = (id: string | number): void => {
-    setTodoList(
-      todoList.map((task: any): void => {
-        if (task.id === id) {
-          return { ...task, completed: true };
-        } else {
-          return task;
-        }
-      })
-    );
-  };
+
+  const markTask = (): void => {};
+  const activeTask = (id: string | number): void => {};
+  const allTask = (id: string | number): void => {};
+
   return (
     <TodoBox dark={dark}>
       <form onSubmit={addTask}>
@@ -66,32 +60,21 @@ export const TodoContainer = (Props: boolean | any) => {
         </InputWrapper>{" "}
       </form>
       <BtnWrapper>
-        <BtnAll>All</BtnAll>
-        <BtnActive>Active</BtnActive>
-        <BtnComplete>Complete</BtnComplete>
+        <BtnAll onClick={() => allTask("")}>All</BtnAll>
+        <BtnActive onClick={() => activeTask("")}>Active</BtnActive>
+        <BtnComplete onClick={() => markTask()}>Completed</BtnComplete>
       </BtnWrapper>
-      {todoList.map(
-        (
-          task: ITask,
-          key: number,
-          id: number,
-          completed: boolean,
-          setCompleted: boolean
-        ) => {
-          return (
-            <TodoTask
-              key={key}
-              task={task}
-              deleteTask={deleteTask}
-              completed={completed}
-              setCompleted={setCompleted}
-              formatAMPM={formatAMPM}
-              id={id}
-              completeTask={completeTask}
-            />
-          );
-        }
-      )}
+      {todoList.map((task: ITask, key: number, id: number) => {
+        return (
+          <TodoTask
+            key={key}
+            task={task}
+            deleteTask={deleteTask}
+            formatAMPM={formatAMPM}
+            id={id}
+          />
+        );
+      })}
     </TodoBox>
   );
 };
@@ -147,9 +130,13 @@ const BtnAll = styled.button`
   font-size: 18px;
   border-radius: 5px;
   cursor: pointer;
+  font-weight: 700;
   transition: all 0.2s linear;
   &:hover {
     background-color: #2bad77;
+  }
+  &:focus {
+    background-color: #066f4b;
   }
 `;
 const BtnActive = styled.button`
@@ -160,9 +147,13 @@ const BtnActive = styled.button`
   font-size: 18px;
   border-radius: 5px;
   cursor: pointer;
+  font-weight: 700;
   transition: all 0.2s linear;
   &:hover {
     background-color: #2bad77;
+  }
+  &:focus {
+    background-color: #066f4b;
   }
 `;
 const BtnComplete = styled.button`
@@ -173,8 +164,12 @@ const BtnComplete = styled.button`
   font-size: 18px;
   border-radius: 5px;
   cursor: pointer;
+  font-weight: 700;
   transition: all 0.2s linear;
   &:hover {
     background-color: #2bad77;
+  }
+  &:focus {
+    background-color: #066f4b;
   }
 `;

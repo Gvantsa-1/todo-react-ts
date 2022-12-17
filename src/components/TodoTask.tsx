@@ -29,17 +29,24 @@ let minutes: number | string = today.getMinutes();
 const noteMinutes = (minutes = minutes < 10 ? `0${minutes}` : minutes);
 
 export const TodoTask = (props: any) => {
-  const {
-    task,
-    deleteTask,
-    todoList,
-    completeTask,
-    handleMarked,
-    formatAMPM,
-    id,
-  } = props;
+  const { task, deleteTask, todoList, setTodoList, id } = props;
   const [marked, setMarked] = useState<boolean>(false);
 
+  const completeTask = (id: string | number): any => {
+    setTodoList(
+      setMarked(!marked),
+      todoList.map((task: any): void => {
+        if (task.id === id) {
+          return { ...task, completed: true };
+        } else {
+          return task;
+        }
+      })
+    );
+  };
+  const handleMarked = (id: string | number) => {
+    setMarked(!marked);
+  };
   return (
     <ListWrapper>
       <List>
@@ -50,6 +57,7 @@ export const TodoTask = (props: any) => {
       </List>
       <Action>
         <Mark
+          id={task.id}
           onClick={() => completeTask(task.id)}
           style={{
             backgroundImage: marked ? `url(${icon})` : `url(${iconCircle})`,
